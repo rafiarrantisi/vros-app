@@ -1,6 +1,8 @@
 # VROS — Vehicle Routing Optimization System
 
-Capstone freelance project untuk **PT. Pindad International Logistic (PT. PIL)**. Port dari single-page React + CDN prototype (`Telkom/VROS v3.html`) ke **Next.js 15 + Supabase** stack, di-deploy via Vercel. Scope: capstone demo / sidang — bukan production PT. PIL.
+**Live:** https://vros-app.vercel.app/
+
+Capstone freelance project untuk **PT. Pindad International Logistic (PT. PIL)**. Port dari single-page React + CDN prototype (`Telkom/VROS v3.html`) ke **Next.js 16 + Supabase** stack, di-deploy via Vercel. Scope: capstone demo / sidang — bukan production PT. PIL.
 
 Algoritma utama: **Clarke-Wright Savings + brute-force TSP** untuk vehicle routing dengan 3 koridor (Bandung → Jakarta / Surabaya / Malang).
 
@@ -104,11 +106,22 @@ Capstone scope — no automated tests. Smoke-test checklist:
 
 ## Deployment
 
+- **Live**: https://vros-app.vercel.app/
 - **GitHub**: https://github.com/rafiarrantisi/vros-app
-- **Vercel**: import repo, set 3 env vars dari `.env.local.example`, auto-deploy on push ke `master`
-- **Supabase**: project di-create manual, migration + seed dijalankan sekali setup
+- **Vercel**: auto-deploy on push ke `main` branch
+- **Supabase project**: `eligskanrurwonzkefdc` (region: ap-southeast-1)
 
-See `docs/deployment.md` (jika ada) atau buka issue kalau ada masalah.
+### Re-seed (if demo data gets corrupted)
+
+```bash
+npm run seed
+```
+
+Script truncates transactional tables + upserts auth users (idempotent). Safe to re-run.
+
+### Apply schema changes
+
+Edit `supabase/migrations/0001_init.sql`, paste into Supabase SQL Editor. Atau pakai Supabase CLI (`supabase link --project-ref eligskanrurwonzkefdc && supabase db push`).
 
 ---
 
