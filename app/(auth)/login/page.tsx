@@ -7,6 +7,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { Icon } from '@/components/Icon'
 import { ROLE_HOME } from '@/lib/constants'
 import { signIn } from '@/lib/auth'
 
@@ -76,15 +77,11 @@ export default function LoginPage() {
             margin: '0 auto 14px',
           }}
         >
-          <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+          <Icon name="truck" size={32} color="#fff" />
         </div>
         <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>VROS</div>
-        <div style={{ fontSize: 12, color: '#4b6299', marginTop: 3 }}>Vehicle Routing Optimization System</div>
-        <div style={{ fontSize: 10, color: '#2d3d55', marginTop: 2 }}>
+        <div style={{ fontSize: 12, color: '#cbd5e1', marginTop: 3 }}>Vehicle Routing Optimization System</div>
+        <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
           PT. Pindad International Logistic · Bandung
         </div>
       </div>
@@ -105,7 +102,7 @@ export default function LoginPage() {
         <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
           Masuk ke Sistem
         </div>
-        <div style={{ fontSize: 11, color: '#4b6299', marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: '#cbd5e1', marginBottom: 20 }}>
           Masukkan kredensial Anda untuk melanjutkan
         </div>
 
@@ -116,7 +113,7 @@ export default function LoginPage() {
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  color: '#4b6299',
+                  color: '#cbd5e1',
                   textTransform: 'uppercase',
                   letterSpacing: '0.8px',
                   display: 'block',
@@ -151,7 +148,7 @@ export default function LoginPage() {
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  color: '#4b6299',
+                  color: '#cbd5e1',
                   textTransform: 'uppercase',
                   letterSpacing: '0.8px',
                   display: 'block',
@@ -250,7 +247,7 @@ export default function LoginPage() {
           <div
             style={{
               fontSize: 10,
-              color: '#2d3d55',
+              color: '#94a3b8',
               textTransform: 'uppercase',
               letterSpacing: '0.8px',
               marginBottom: 10,
@@ -289,8 +286,8 @@ export default function LoginPage() {
                 <div style={{ fontSize: 10, fontWeight: 700, color: d.color, marginBottom: 3 }}>
                   {d.label}
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'DM Mono', color: '#4b6299' }}>{d.u}</div>
-                <div style={{ fontSize: 9, fontFamily: 'DM Mono', color: '#2d3d55' }}>{d.p}</div>
+                <div style={{ fontSize: 10, fontFamily: 'DM Mono', color: '#cbd5e1' }}>{d.u}</div>
+                <div style={{ fontSize: 9, fontFamily: 'DM Mono', color: '#94a3b8' }}>{d.p}</div>
               </button>
             ))}
           </div>
@@ -300,7 +297,7 @@ export default function LoginPage() {
       <div
         style={{
           fontSize: 10,
-          color: '#1e2f4a',
+          color: '#94a3b8',
           animation: 'slideUp 0.5s 0.16s ease both',
           opacity: 0,
           animationFillMode: 'forwards',

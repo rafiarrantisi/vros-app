@@ -523,7 +523,7 @@ function DriverRoute({ plan, orders, loc, cps, dest }: DriverRouteProps) {
                           fontWeight: 700,
                         }}
                       >
-                        ◉ Posisi Anda
+                        ◉ Your Current Location
                       </span>
                     )}
                   </div>

@@ -62,18 +62,14 @@ export function Sidebar({ userName, role }: SidebarProps) {
               flexShrink: 0,
             }}
           >
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+            <Icon name="truck" size={16} color="#fff" />
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>VROS</div>
             <div
               style={{
                 fontSize: 9,
-                color: '#2d3d55',
+                color: '#94a3b8',
                 letterSpacing: '0.5px',
                 textTransform: 'uppercase',
               }}
@@ -117,7 +113,7 @@ export function Sidebar({ userName, role }: SidebarProps) {
             >
               {userName}
             </div>
-            <div style={{ fontSize: 9, color: '#3d5070' }}>{ROLE_LABEL[role]}</div>
+            <div style={{ fontSize: 9, color: '#94a3b8' }}>{ROLE_LABEL[role]}</div>
           </div>
         </div>
       </div>
@@ -130,7 +126,7 @@ export function Sidebar({ userName, role }: SidebarProps) {
               style={{
                 fontSize: 9,
                 fontWeight: 700,
-                color: '#2d3d55',
+                color: '#94a3b8',
                 textTransform: 'uppercase',
                 letterSpacing: '0.9px',
                 padding: '8px 9px 4px',
@@ -154,7 +150,7 @@ export function Sidebar({ userName, role }: SidebarProps) {
                       padding: '7px 9px',
                       borderRadius: 7,
                       background: active ? `${roleColor}22` : 'transparent',
-                      color: active ? roleColor : '#4b6299',
+                      color: active ? roleColor : '#cbd5e1',
                       fontSize: 12,
                       fontWeight: active ? 700 : 400,
                       marginBottom: 1,
@@ -164,7 +160,7 @@ export function Sidebar({ userName, role }: SidebarProps) {
                       textDecoration: 'none',
                     }}
                   >
-                    <Icon name={item.icon} size={13} color={active ? roleColor : '#4b6299'} />
+                    <Icon name={item.icon} size={13} color={active ? roleColor : '#cbd5e1'} />
                     <span
                       style={{
                         flex: 1,
@@ -208,7 +204,7 @@ export function Sidebar({ userName, role }: SidebarProps) {
             border: 'none',
             cursor: 'pointer',
             background: 'transparent',
-            color: '#3d5070',
+            color: '#cbd5e1',
             fontSize: 12,
             fontFamily: 'DM Sans',
             transition: 'all 0.12s',
@@ -219,13 +215,13 @@ export function Sidebar({ userName, role }: SidebarProps) {
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#3d5070'
+            e.currentTarget.style.color = '#cbd5e1'
           }}
         >
           <Icon name="logout" size={13} color="currentColor" />
           Sign Out
         </button>
-        <div style={{ fontSize: 9, color: '#1e2d44', textAlign: 'center', marginTop: 8 }}>
+        <div style={{ fontSize: 9, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
           Technova · Telkom Univ 2026
         </div>
       </div>
