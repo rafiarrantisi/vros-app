@@ -41,6 +41,13 @@ export const MANAGER_NAV: readonly NavItem[] = [
     title: 'Delivery Status Update',
   },
   {
+    href: '/manager/tracking',
+    label: 'Live Tracking',
+    icon: 'truck',
+    section: 'Operations',
+    title: 'Live Driver Tracking',
+  },
+  {
     href: '/manager/plans',
     label: 'Plan History',
     icon: 'history',
