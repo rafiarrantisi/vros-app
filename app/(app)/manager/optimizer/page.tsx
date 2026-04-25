@@ -565,6 +565,7 @@ export default function ManagerOptimizerPage() {
               const planOrders = orders.filter((o) => route.orderIds.includes(o.id))
               const util = Math.max(route.weightPct, route.volPct)
               const utilColor = util > 80 ? 'red' : util > 50 ? 'yellow' : 'green'
+              const bottleneck = route.weightPct >= route.volPct ? 'weight' : 'volume'
 
               return (
                 <Card key={route.id} style={{ marginBottom: 14, borderLeft: `3px solid ${c}` }}>
@@ -626,7 +627,7 @@ export default function ManagerOptimizerPage() {
                         {veh?.max_weight ?? '—'}T · {veh?.max_vol?.toFixed(1) ?? '—'} m³ capacity
                       </div>
                     </div>
-                    <Badge label={`${util}% utilized`} color={utilColor} />
+                    <Badge label={`${util}% capacity · ${bottleneck} bound`} color={utilColor} />
                   </div>
 
                   <div

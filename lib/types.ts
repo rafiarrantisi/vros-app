@@ -59,11 +59,19 @@ export interface Order {
   customer_id: string
   customer: string
   dest: string
-  weight_ton: number
+  weight_ton: number // total weight, kg / 1000 — used by CVRP
   length_m: number | null
   width_m: number | null
   height_m: number | null
-  vol_m3: number | null
+  vol_m3: number | null // total volume, used by CVRP
+  // ── Per-unit breakdown (added Revision Round 1) ────────────────
+  weight_per_product_kg: number
+  quantity: number
+  length_per_pkg_m: number
+  width_per_pkg_m: number
+  height_per_pkg_m: number
+  total_packaging: number
+  // ────────────────────────────────────────────────────────────────
   notes: string | null
   status: OrderStatus
   delivery_outcome: DeliveryOutcome | null

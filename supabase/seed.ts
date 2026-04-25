@@ -322,6 +322,9 @@ async function main() {
 
   // 5. Orders (driver_id UUID; also reference route_plan_id)
   console.log('▶ Orders…')
+  // Seed assumes single product + single packaging per order — per-unit values
+  // mirror the stored totals. Real PT. PIL workflow will populate per-unit
+  // breakdown via the Create Delivery Order form.
   const ordersRows = ORDERS.map((o) => ({
     id: o.id,
     customer_id: o.customer_id,
@@ -332,6 +335,12 @@ async function main() {
     width_m: o.width_m,
     height_m: o.height_m,
     vol_m3: o.vol_m3,
+    weight_per_product_kg: Math.round(o.weight_ton * 1000),
+    quantity: 1,
+    length_per_pkg_m: o.length_m,
+    width_per_pkg_m: o.width_m,
+    height_per_pkg_m: o.height_m,
+    total_packaging: 1,
     notes: o.notes,
     status: o.status,
     delivery_outcome: o.delivery_outcome,

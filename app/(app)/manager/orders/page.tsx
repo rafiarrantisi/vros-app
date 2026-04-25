@@ -21,17 +21,23 @@ type FilterStatus = 'all' | OrderStatus
 const CITIES = ['Jakarta', 'Surabaya', 'Malang'] as const
 const FILTERS: FilterStatus[] = ['all', 'pending', 'confirmed', 'in-transit', 'delivered']
 
-// Form uses cm/kg for UI convenience; converts to m/ton on submit.
+// Form captures per-product weight and per-packaging dimensions; totals auto-
+// computed and shown read-only. On submit, totals are stored in weight_ton/vol_m3
+// (the columns CVRP reads) alongside the per-unit breakdown.
 interface FormState {
   id: string
   customer_id: string
   customer: string
   dest: string
-  weight_kg: string
-  length_cm: string
-  width_cm: string
-  height_cm: string
-  vol_m3: number
+  weight_per_product_kg: string
+  quantity: string
+  length_per_pkg_m: string
+  width_per_pkg_m: string
+  height_per_pkg_m: string
+  total_packaging: string
+  // Derived/display only — recomputed via deriveTotals() in updateField.
+  total_weight_kg: number
+  total_vol_m3: number
   notes: string
 }
 
@@ -40,11 +46,14 @@ const EMPTY_FORM: FormState = {
   customer_id: '',
   customer: '',
   dest: 'Jakarta',
-  weight_kg: '',
-  length_cm: '',
-  width_cm: '',
-  height_cm: '',
-  vol_m3: 0,
+  weight_per_product_kg: '',
+  quantity: '1',
+  length_per_pkg_m: '',
+  width_per_pkg_m: '',
+  height_per_pkg_m: '',
+  total_packaging: '1',
+  total_weight_kg: 0,
+  total_vol_m3: 0,
   notes: '',
 }
 
@@ -52,11 +61,17 @@ function nextOrderId(existingCount: number): string {
   return `PO-2026-${String(existingCount + 1).padStart(3, '0')}`
 }
 
-function computeVol(lengthCm: string, widthCm: string, heightCm: string): number {
-  const l = parseFloat(lengthCm) || 0
-  const w = parseFloat(widthCm) || 0
-  const h = parseFloat(heightCm) || 0
-  return parseFloat((l * w * h / 1e6).toFixed(4))
+function deriveTotals(f: FormState): { total_weight_kg: number; total_vol_m3: number } {
+  const wpp = parseFloat(f.weight_per_product_kg) || 0
+  const qty = parseFloat(f.quantity) || 0
+  const l = parseFloat(f.length_per_pkg_m) || 0
+  const w = parseFloat(f.width_per_pkg_m) || 0
+  const h = parseFloat(f.height_per_pkg_m) || 0
+  const pkg = parseFloat(f.total_packaging) || 0
+  return {
+    total_weight_kg: parseFloat((wpp * qty).toFixed(2)),
+    total_vol_m3: parseFloat((l * w * h * pkg).toFixed(4)),
+  }
 }
 
 function destColor(dest: string): string {
@@ -89,6 +104,7 @@ export default function ManagerOrdersPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -100,18 +116,23 @@ export default function ManagerOrdersPage() {
   }
 
   const openEdit = (o: Order) => {
-    setForm({
+    const next: FormState = {
       id: o.id,
       customer_id: o.customer_id,
       customer: o.customer,
       dest: o.dest,
-      weight_kg: String(Math.round(o.weight_ton * 1000)),
-      length_cm: String(Math.round((o.length_m ?? 0) * 100)),
-      width_cm: String(Math.round((o.width_m ?? 0) * 100)),
-      height_cm: String(Math.round((o.height_m ?? 0) * 100)),
-      vol_m3: o.vol_m3 ?? 0,
+      weight_per_product_kg: String(o.weight_per_product_kg ?? ''),
+      quantity: String(o.quantity ?? 1),
+      length_per_pkg_m: String(o.length_per_pkg_m ?? ''),
+      width_per_pkg_m: String(o.width_per_pkg_m ?? ''),
+      height_per_pkg_m: String(o.height_per_pkg_m ?? ''),
+      total_packaging: String(o.total_packaging ?? 1),
+      total_weight_kg: 0,
+      total_vol_m3: 0,
       notes: o.notes ?? '',
-    })
+    }
+    const totals = deriveTotals(next)
+    setForm({ ...next, ...totals })
     setEditTarget(o.id)
     setModal('edit')
   }
@@ -119,8 +140,17 @@ export default function ManagerOrdersPage() {
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value }
-      if (key === 'length_cm' || key === 'width_cm' || key === 'height_cm') {
-        next.vol_m3 = computeVol(next.length_cm, next.width_cm, next.height_cm)
+      const dimensionKey =
+        key === 'weight_per_product_kg' ||
+        key === 'quantity' ||
+        key === 'length_per_pkg_m' ||
+        key === 'width_per_pkg_m' ||
+        key === 'height_per_pkg_m' ||
+        key === 'total_packaging'
+      if (dimensionKey) {
+        const t = deriveTotals(next)
+        next.total_weight_kg = t.total_weight_kg
+        next.total_vol_m3 = t.total_vol_m3
       }
       if (key === 'customer_id') {
         const c = customers.find((x) => x.id === value)
@@ -134,25 +164,40 @@ export default function ManagerOrdersPage() {
   }
 
   const handleSubmit = async () => {
-    if (!form.customer || !form.weight_kg) return
+    if (!form.customer || !form.weight_per_product_kg || !form.quantity) return
 
-    const weightTon = parseFloat((parseFloat(form.weight_kg || '0') / 1000).toFixed(3))
-    const lengthM = parseFloat((parseFloat(form.length_cm || '0') / 100).toFixed(2))
-    const widthM = parseFloat((parseFloat(form.width_cm || '0') / 100).toFixed(2))
-    const heightM = parseFloat((parseFloat(form.height_cm || '0') / 100).toFixed(2))
+    const totals = deriveTotals(form)
+    const weightTon = parseFloat((totals.total_weight_kg / 1000).toFixed(3))
+    const volM3 = totals.total_vol_m3
+    const lengthM = parseFloat(form.length_per_pkg_m) || 0
+    const widthM = parseFloat(form.width_per_pkg_m) || 0
+    const heightM = parseFloat(form.height_per_pkg_m) || 0
+    const wpp = parseFloat(form.weight_per_product_kg) || 0
+    const qty = parseInt(form.quantity, 10) || 1
+    const pkg = parseInt(form.total_packaging, 10) || 1
+
+    const baseRow = {
+      customer_id: form.customer_id || null,
+      customer: form.customer,
+      dest: form.dest,
+      weight_ton: weightTon,
+      length_m: lengthM,
+      width_m: widthM,
+      height_m: heightM,
+      vol_m3: volM3,
+      weight_per_product_kg: wpp,
+      quantity: qty,
+      length_per_pkg_m: lengthM,
+      width_per_pkg_m: widthM,
+      height_per_pkg_m: heightM,
+      total_packaging: pkg,
+      notes: form.notes || null,
+    }
 
     if (modal === 'create') {
       const row = {
         id: form.id,
-        customer_id: form.customer_id || null,
-        customer: form.customer,
-        dest: form.dest,
-        weight_ton: weightTon,
-        length_m: lengthM,
-        width_m: widthM,
-        height_m: heightM,
-        vol_m3: form.vol_m3,
-        notes: form.notes || null,
+        ...baseRow,
         status: 'pending' as const,
         delivery_outcome: null,
         date: TODAY,
@@ -165,18 +210,7 @@ export default function ManagerOrdersPage() {
         return
       }
     } else if (modal === 'edit' && editTarget) {
-      const patch = {
-        customer_id: form.customer_id || null,
-        customer: form.customer,
-        dest: form.dest,
-        weight_ton: weightTon,
-        length_m: lengthM,
-        width_m: widthM,
-        height_m: heightM,
-        vol_m3: form.vol_m3,
-        notes: form.notes || null,
-      }
-      const { error } = await sb.from('orders').update(patch).eq('id', editTarget)
+      const { error } = await sb.from('orders').update(baseRow).eq('id', editTarget)
       if (error) {
         alert(`Update failed: ${error.message}`)
         return
@@ -495,44 +529,69 @@ export default function ManagerOrdersPage() {
               </div>
             )}
             <FormInput
-              label="Weight (kg)"
-              value={form.weight_kg}
-              onChange={(v) => updateField('weight_kg', v)}
+              label="Weight / Product (kg)"
+              value={form.weight_per_product_kg}
+              onChange={(v) => updateField('weight_per_product_kg', v)}
               type="number"
               placeholder="0"
               mono
               required
             />
             <FormInput
-              label="Auto Volume (m³)"
-              value={form.vol_m3 ? String(form.vol_m3) : '—'}
+              label="Quantity"
+              value={form.quantity}
+              onChange={(v) => updateField('quantity', v)}
+              type="number"
+              placeholder="1"
+              mono
+              required
+            />
+            <FormInput
+              label="Total Weight (kg)"
+              value={form.total_weight_kg ? String(form.total_weight_kg) : '—'}
               onChange={() => {}}
               readOnly
               mono
             />
             <FormInput
-              label="Length (cm)"
-              value={form.length_cm}
-              onChange={(v) => updateField('length_cm', v)}
+              label="Total Volume (m³)"
+              value={form.total_vol_m3 ? String(form.total_vol_m3) : '—'}
+              onChange={() => {}}
+              readOnly
+              mono
+            />
+            <FormInput
+              label="Length / Packaging (m)"
+              value={form.length_per_pkg_m}
+              onChange={(v) => updateField('length_per_pkg_m', v)}
               type="number"
               placeholder="0"
               mono
             />
             <FormInput
-              label="Width (cm)"
-              value={form.width_cm}
-              onChange={(v) => updateField('width_cm', v)}
+              label="Width / Packaging (m)"
+              value={form.width_per_pkg_m}
+              onChange={(v) => updateField('width_per_pkg_m', v)}
               type="number"
               placeholder="0"
               mono
             />
             <FormInput
-              label="Height (cm)"
-              value={form.height_cm}
-              onChange={(v) => updateField('height_cm', v)}
+              label="Height / Packaging (m)"
+              value={form.height_per_pkg_m}
+              onChange={(v) => updateField('height_per_pkg_m', v)}
               type="number"
               placeholder="0"
               mono
+            />
+            <FormInput
+              label="Total Packaging"
+              value={form.total_packaging}
+              onChange={(v) => updateField('total_packaging', v)}
+              type="number"
+              placeholder="1"
+              mono
+              required
             />
             <div
               style={{
