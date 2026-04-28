@@ -82,7 +82,7 @@ Manager memiliki akses penuh terhadap data operasional. Menu yang tersedia di si
 * **Dashboard.** Ringkasan KPI mingguan: jumlah order aktif, persentase on-time, utilisasi armada, total kilometer.
 * **Delivery Orders.** Daftar seluruh purchase order. Tombol *New Order* membuka form input dengan struktur berat per produk, kuantitas, dimensi per kemasan, dan jumlah kemasan. Total berat dan total volume terkalkulasi otomatis.
 * **Route Optimizer.** Halaman utama untuk menjalankan optimasi rute. Memilih order pending lalu menekan *Run CVRP* akan menampilkan animasi proses algoritma, diikuti daftar draft rute yang dapat dikonfirmasi.
-* **Delivery Status.** Memperbarui status route plan dari `confirmed` menjadi `in-transit` lalu `delivered`.
+* **Delivery Status.** Pusat aktivitas setelah rute dikonfirmasi. Tiga aksi yang tersedia di sini: (1) *Assign Driver*, memilih supir yang akan menjalankan rute, dengan peringatan bila supir sudah memegang rute aktif lain; (2) *Ganti / Lepas Assignment*, mengubah atau melepas supir dari rute; (3) *On-Time / Late*, menandai outcome akhir saat pengiriman selesai. Saat supir di-assign, status rute otomatis berpindah dari `confirmed` ke `in-transit` dan supir langsung dapat melihat rute tersebut di portalnya.
 * **Live Tracking.** Daftar semua supir yang sedang dalam perjalanan, lengkap dengan progress bar dan timeline checkpoint. Update otomatis tanpa perlu refresh.
 * **Plan History.** Arsip seluruh route plan yang pernah dijalankan.
 * **Performance Report.** Distribusi pengiriman on-time vs late.
