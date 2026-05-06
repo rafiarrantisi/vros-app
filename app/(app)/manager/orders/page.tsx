@@ -164,7 +164,13 @@ export default function ManagerOrdersPage() {
   }
 
   const handleSubmit = async () => {
-    if (!form.customer || !form.weight_per_product_kg || !form.quantity) return
+    if (!form.customer_id) {
+      alert(
+        'Customer wajib dipilih dari daftar. Jika belum ada, tambahkan dulu di Admin > Customer Master.',
+      )
+      return
+    }
+    if (!form.weight_per_product_kg || !form.quantity) return
 
     const totals = deriveTotals(form)
     const weightTon = parseFloat((totals.total_weight_kg / 1000).toFixed(3))
@@ -518,14 +524,20 @@ export default function ManagerOrdersPage() {
               />
             </div>
             {!form.customer_id && (
-              <div style={{ gridColumn: '1/-1' }}>
-                <FormInput
-                  label="Customer Name (manual)"
-                  value={form.customer}
-                  onChange={(v) => updateField('customer', v)}
-                  placeholder="e.g. PT. Baru Jaya"
-                  required
-                />
+              <div
+                style={{
+                  gridColumn: '1/-1',
+                  padding: '10px 12px',
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  color: '#92400e',
+                  lineHeight: 1.5,
+                }}
+              >
+                Customer wajib dipilih dari daftar di atas. Bila belum terdaftar, tambahkan dulu
+                lewat menu <strong>Admin &gt; Customer Master</strong>, lalu kembali ke form ini.
               </div>
             )}
             <FormInput
